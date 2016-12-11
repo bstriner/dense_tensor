@@ -1,1 +1,3 @@
 from dense_tensor import DenseTensor
+from dense_tensor_symmetric import DenseTensorSymmetric
+from dense_tensor_low_rank import DenseTensorLowRank

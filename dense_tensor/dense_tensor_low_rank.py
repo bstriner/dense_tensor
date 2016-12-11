@@ -11,7 +11,9 @@ from keras import activations, initializations, regularizers, constraints
 from keras.engine import InputSpec, Layer, Merge
 from keras.regularizers import ActivityRegularizer, Regularizer
 import theano.tensor as T
-class DenseTensor(Layer):
+import numpy as np
+
+class DenseTensorLowRank(Layer):
     '''Tensor layer: a = f(xVx^T + Wx + b)
     # Example
     ```python
@@ -63,10 +65,13 @@ class DenseTensor(Layer):
     # Output shape
         2D tensor with shape: `(nb_samples, output_dim)`.
     '''
-    def __init__(self, output_dim, init='glorot_uniform', activation='linear', weights=None,
+
+    def __init__(self, output_dim, q=10, init='glorot_uniform', activation='linear', weights=None,
                  W_regularizer=None, V_regularizer=None, b_regularizer=None, activity_regularizer=None,
                  W_constraint=None, b_constraint=None,
                  bias=True, input_dim=None, **kwargs):
+        self.q = q
+
         self.init = initializations.get(init)
         self.activation = activations.get(activation)
         self.output_dim = output_dim
@@ -86,24 +91,30 @@ class DenseTensor(Layer):
 
         if self.input_dim:
             kwargs['input_shape'] = (self.input_dim,)
-        super(DenseTensor, self).__init__(**kwargs)
+        super(DenseTensorLowRank, self).__init__(**kwargs)
 
     def build(self, input_shape):
         assert len(input_shape) == 2
         input_dim = input_shape[1]
         self.input_spec = [InputSpec(dtype=K.floatx(),
                                      shape=(None, input_dim))]
-
         self.W = self.init((input_dim, self.output_dim),
-                           name='{}_W'.format(self.name))
-        self.V = self.init((input_dim, self.output_dim, input_dim),
-                           name='{}_V'.format(self.name))
+                           name='{}_W'.format(self.name))  # m,p
+        self.Q1 = self.init((self.output_dim, input_dim, self.q),
+                            name='{}_Q1'.format(self.name))  # p,m,q
+
+
+        self.Q2 = self.init((self.output_dim, input_dim, self.q),
+                            name='{}_Q2'.format(self.name))  # p,m,q
+
+        self.V = T.batched_tensordot(self.Q1, self.Q2, axes=[[2], [2]])  # p,m,q + p,m,q = p,m,m
+
         if self.bias:
             self.b = K.zeros((self.output_dim,),
                              name='{}_b'.format(self.name))
-            self.trainable_weights = [self.W, self.V, self.b]
+            self.trainable_weights = [self.W, self.Q1, self.Q2, self.b]
         else:
-            self.trainable_weights = [self.W, self.V]
+            self.trainable_weights = [self.W, self.Q1, self.Q2]
 
         self.regularizers = []
         if self.W_regularizer:
@@ -134,7 +145,9 @@ class DenseTensor(Layer):
 
     def call(self, x, mask=None):
         output = K.dot(x, self.W)
-        output += T.batched_dot(x, T.tensordot(x, self.V, axes=[1, 2]))
+        tmp1 = T.tensordot(x, self.V, axes=[[1], [2]])  # n,m + p,m,m = n,p,m
+        tmp2 = T.batched_tensordot(x, tmp1, axes=[[1], [2]])  # n,m + n,p,m = n,p
+        output += tmp2
         if self.bias:
             output += self.b
         return self.activation(output)
@@ -155,5 +168,5 @@ class DenseTensor(Layer):
                   'b_constraint': self.b_constraint.get_config() if self.b_constraint else None,
                   'bias': self.bias,
                   'input_dim': self.input_dim}
-        base_config = super(DenseTensor, self).get_config()
+        base_config = super(DenseTensorSymmetric, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
