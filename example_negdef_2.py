@@ -12,22 +12,27 @@ import numpy as np
 import pickle
 import keras.backend as K
 from tqdm import tqdm
-from dense_tensor import  DenseTensorLowRank
+from dense_tensor import DenseTensorSymmetric
 from keras.regularizers import WeightRegularizer, l1, l2
 from example import experiment
 
-#Params: 384,170
-def low_rank_model(input_dim=28*28, regularization=1e-5, k=10, q=24):
+
+def negdef_model_2(hidden_dim=64, activation='tanh', input_dim=28 * 28, regularization=1e-5, k=10, qh=8, qy=24):
     _x = Input(shape=(input_dim,))
     reg = lambda: l1(regularization)
-    y = DenseTensorLowRank(q=q, output_dim=k, activation='softmax', W_regularizer=reg(), V_regularizer=reg())
-    _y=y(_x)
+    h = DenseTensorSymmetric(alpha=1e-3, beta=-1, q=qh, output_dim=hidden_dim, activation=activation, W_regularizer=reg(),
+                             V_regularizer=reg(), name="h")
+    y = DenseTensorSymmetric(alpha=1e-3, beta=-1, q=qy, output_dim=k, activation='softmax', W_regularizer=reg(),
+                             V_regularizer=reg(), name="y")
+    _y = y(h(_x))
     m = Model(_x, _y)
+    m.summary()
     m.compile(Adam(1e-3, decay=1e-4), loss='categorical_crossentropy', metrics=["accuracy"])
     return m
 
+
 if __name__ == "__main__":
     logging.config.fileConfig('logging.conf')
-    path = "output/dense_tensor_low_rank"
-    model = low_rank_model()
+    path = "output/dense_tensor_negdef_2"
+    model = negdef_model_2()
     experiment(path, model)
