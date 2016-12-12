@@ -39,6 +39,7 @@ def experiment(path, model, nb_epoch=100):
     if not os.path.exists(path):
         os.makedirs(path)
     print "Training %s" % path
+    model.summary()
     csvpath = os.path.join(path, "history.csv")
     modelpath = os.path.join(path, "model.h5")
     if os.path.exists(csvpath):
@@ -48,7 +49,6 @@ def experiment(path, model, nb_epoch=100):
 
     batch_size = 32
     k = 10
-    model.summary()
     history = model.fit(x_train, one_hot(y_train, k), nb_epoch=nb_epoch, batch_size=batch_size,
                         validation_data=(x_test, one_hot(y_test, k)))
     model.save_weights(modelpath)
