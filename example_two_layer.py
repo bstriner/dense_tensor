@@ -12,26 +12,33 @@ import numpy as np
 import pickle
 import keras.backend as K
 from tqdm import tqdm
-from dense_tensor import DenseTensorSymmetric
+from dense_tensor import DenseTensorLowRank
 from keras.regularizers import WeightRegularizer, l1, l2
 from example import experiment
 
+"""
+h (DenseTensorLowRank)           (None, 64)            853056      input_1[0][0]
+y (DenseTensorLowRank)           (None, 10)            31370       h[0][0]
+Total params: 884426
+"""
 
-# Params: 196010
-def negdef_model(input_dim=28 * 28, regularization=1e-5, k=10, q=24):
+
+def two_layer_model(input_dim=28 * 28, hidden_dim=64, regularization=1e-5, k=10, activation='tanh', qy=24):
+    """Create two layer MLP with softmax output"""
     _x = Input(shape=(input_dim,))
     reg = lambda: l1(regularization)
-    y = DenseTensorSymmetric(alpha=1e-3, beta=-1, q=q, output_dim=k, activation='softmax', W_regularizer=reg(),
-                             V_regularizer=reg())
-    _y = y(_x)
+
+    h = Dense(output_dim=hidden_dim, activation=activation, W_regularizer=reg(), name="h")
+    y = DenseTensorLowRank(q=qy, output_dim=k, activation='softmax', W_regularizer=reg(), V_regularizer=reg(), name="y")
+
+    _y = y(h(_x))
     m = Model(_x, _y)
-    m.summary()
     m.compile(Adam(1e-3, decay=1e-4), loss='categorical_crossentropy', metrics=["accuracy"])
     return m
 
 
 if __name__ == "__main__":
     logging.config.fileConfig('logging.conf')
-    path = "output/dense_tensor_negdef"
-    model = negdef_model()
+    path = "output/two_layer_model"
+    model = two_layer_model()
     experiment(path, model)

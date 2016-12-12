@@ -16,6 +16,12 @@ from dense_tensor import DenseTensorLowRank
 from keras.regularizers import WeightRegularizer, l1, l2
 from example import experiment
 
+"""
+h (DenseTensorLowRank)           (None, 64)            853056      input_1[0][0]
+y (DenseTensorLowRank)           (None, 10)            31370       h[0][0]
+Total params: 884426
+"""
+
 
 def low_rank_model_2(input_dim=28 * 28, hidden_dim=64, regularization=1e-5, k=10, activation='tanh', qh=8, qy=24):
     """Create two layer MLP with softmax output"""
