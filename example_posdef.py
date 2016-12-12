@@ -17,12 +17,13 @@ from keras.regularizers import WeightRegularizer, l1, l2
 from example import experiment
 
 
-def posdef_model(input_dim=28 * 28, regularization=1e-5, k=10):
+# Params: 196010
+def posdef_model(input_dim=28 * 28, regularization=1e-5, k=10, q=24):
     """Create two layer MLP with softmax output"""
     _x = Input(shape=(input_dim,))
     reg = lambda: l1(regularization)
 
-    y = DenseTensorSymmetric(alpha=1e-3, beta=1, q=24, output_dim=k, activation='softmax', W_regularizer=reg(),
+    y = DenseTensorSymmetric(alpha=1e-3, beta=1, q=q, output_dim=k, activation='softmax', W_regularizer=reg(),
                              V_regularizer=reg(), name="y")
 
     _y = y(_x)

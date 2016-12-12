@@ -13,6 +13,7 @@ from keras.regularizers import ActivityRegularizer, Regularizer
 import theano.tensor as T
 import numpy as np
 
+
 class DenseTensorLowRank(Layer):
     '''Tensor layer: a = f(xVx^T + Wx + b)
     # Example
@@ -103,7 +104,6 @@ class DenseTensorLowRank(Layer):
         self.Q1 = self.init((self.output_dim, input_dim, self.q),
                             name='{}_Q1'.format(self.name))  # p,m,q
 
-
         self.Q2 = self.init((self.output_dim, input_dim, self.q),
                             name='{}_Q2'.format(self.name))  # p,m,q
 
@@ -149,7 +149,7 @@ class DenseTensorLowRank(Layer):
         tmp2 = T.batched_tensordot(x, tmp1, axes=[[1], [2]])  # n,m + n,p,m = n,p
         output += tmp2
         if self.bias:
-            output += self.b
+            output += self.b.dimshuffle(['x', 0])
         return self.activation(output)
 
     def get_output_shape_for(self, input_shape):

@@ -22,7 +22,8 @@ def posdef_model_2(hidden_dim=64, input_dim=28 * 28, regularization=1e-5, k=10, 
     _x = Input(shape=(input_dim,))
     reg = lambda: l1(regularization)
 
-    h = DenseTensorSymmetric(alpha=1e-3, beta=1, q=8, output_dim=hidden_dim, activation=activation, W_regularizer=reg(),
+    h = DenseTensorSymmetric(alpha=1e-3, beta=1, q=24, output_dim=hidden_dim, activation=activation,
+                             W_regularizer=reg(),
                              V_regularizer=reg(), name="h")
 
     y = DenseTensorSymmetric(alpha=1e-3, beta=1, q=24, output_dim=k, activation='softmax', W_regularizer=reg(),

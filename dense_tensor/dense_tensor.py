@@ -11,6 +11,8 @@ from keras import activations, initializations, regularizers, constraints
 from keras.engine import InputSpec, Layer, Merge
 from keras.regularizers import ActivityRegularizer, Regularizer
 import theano.tensor as T
+
+
 class DenseTensor(Layer):
     '''Tensor layer: a = f(xVx^T + Wx + b)
     # Example
@@ -63,6 +65,7 @@ class DenseTensor(Layer):
     # Output shape
         2D tensor with shape: `(nb_samples, output_dim)`.
     '''
+
     def __init__(self, output_dim, init='glorot_uniform', activation='linear', weights=None,
                  W_regularizer=None, V_regularizer=None, b_regularizer=None, activity_regularizer=None,
                  W_constraint=None, b_constraint=None,

@@ -25,18 +25,6 @@ def one_hot(labels, m):
     return y
 
 
-def tensor_model(input_dim=28 * 28, regularization=1e-5, k=10):
-    """Create two layer MLP with softmax output"""
-    _x = Input(shape=(input_dim,))
-    reg = lambda: l1(regularization)
-    y = DenseTensor(k, activation='softmax', W_regularizer=reg(), V_regularizer=reg())
-    _y = y(_x)
-    m = Model(_x, _y)
-    m.summary()
-    m.compile(Adam(1e-3, decay=1e-4), loss='categorical_crossentropy', metrics=["accuracy"])
-    return m
-
-
 def mnist_data():
     """Rescale and reshape MNIST data"""
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -50,6 +38,12 @@ def mnist_data():
 def experiment(path, model, nb_epoch=100):
     if not os.path.exists(path):
         os.makedirs(path)
+    print "Training %s" % path
+    csvpath = os.path.join(path, "history.csv")
+    modelpath = os.path.join(path, "model.h5")
+    if os.path.exists(csvpath):
+        print "Already exists: %s"%csvpath
+        return
     x_train, y_train, x_test, y_test = mnist_data()
 
     batch_size = 32
@@ -57,14 +51,6 @@ def experiment(path, model, nb_epoch=100):
     model.summary()
     history = model.fit(x_train, one_hot(y_train, k), nb_epoch=nb_epoch, batch_size=batch_size,
                         validation_data=(x_test, one_hot(y_test, k)))
-    model.save_weights('%s/model.hd5' % path)
-    csvpath = os.path.join(path, "history.csv")
+    model.save_weights(modelpath)
     df = pd.DataFrame(history.history)
     df.to_csv(csvpath)
-
-
-if __name__ == "__main__":
-    logging.config.fileConfig('logging.conf')
-    path = "output/dense_tensor/test1"
-    m = tensor_model()
-    experiment(path, m)

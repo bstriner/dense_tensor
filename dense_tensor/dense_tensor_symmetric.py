@@ -151,7 +151,7 @@ class DenseTensorSymmetric(Layer):
         tmp2 = T.batched_tensordot(x, tmp1, axes=[[1], [2]])  # n,m + n,p,m = n,p
         output += tmp2
         if self.bias:
-            output += self.b
+            output += self.b.dimshuffle(['x', 0])
         return self.activation(output)
 
     def get_output_shape_for(self, input_shape):
