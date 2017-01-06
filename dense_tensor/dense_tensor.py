@@ -10,7 +10,6 @@ from keras import backend as K
 from keras import activations, initializations, regularizers, constraints
 from keras.engine import InputSpec, Layer, Merge
 from keras.regularizers import ActivityRegularizer, Regularizer
-import theano.tensor as T
 
 
 class DenseTensor(Layer):
@@ -91,6 +90,11 @@ class DenseTensor(Layer):
             kwargs['input_shape'] = (self.input_dim,)
         super(DenseTensor, self).__init__(**kwargs)
 
+    def build_V(self, input_dim):
+        self.V = self.init((input_dim, self.output_dim, input_dim),
+                           name='{}_V'.format(self.name))
+        return [self.V]
+
     def build(self, input_shape):
         assert len(input_shape) == 2
         input_dim = input_shape[1]
@@ -99,14 +103,13 @@ class DenseTensor(Layer):
 
         self.W = self.init((input_dim, self.output_dim),
                            name='{}_W'.format(self.name))
-        self.V = self.init((input_dim, self.output_dim, input_dim),
-                           name='{}_V'.format(self.name))
+
+        self.trainable_weights = [self.W]
+        self.trainable_weights += self.build_V(input_dim=input_dim)
         if self.bias:
             self.b = K.zeros((self.output_dim,),
                              name='{}_b'.format(self.name))
-            self.trainable_weights = [self.W, self.V, self.b]
-        else:
-            self.trainable_weights = [self.W, self.V]
+            self.trainable_weights += [self.b]
 
         self.regularizers = []
         if self.W_regularizer:
@@ -137,7 +140,9 @@ class DenseTensor(Layer):
 
     def call(self, x, mask=None):
         output = K.dot(x, self.W)
-        output += T.batched_dot(x, T.tensordot(x, self.V, axes=[1, 2]))
+        tmp1 = K.dot(x, self.V)  # n,m + p,m,m = n,p,m
+        tmp2 = K.batch_dot(x, tmp1, axes=[[1], [2]])  # n,m + n,p,m = n,p
+        output += tmp2
         if self.bias:
             output += self.b
         return self.activation(output)

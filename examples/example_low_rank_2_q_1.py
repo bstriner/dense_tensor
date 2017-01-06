@@ -17,7 +17,9 @@ from keras.regularizers import WeightRegularizer, l1, l2
 from example import experiment
 
 """
-
+h (DenseTensorLowRank)           (None, 64)            150592      input_1[0][0]
+y (DenseTensorLowRank)           (None, 10)            1930        h[0][0]
+Total params: 152522
 """
 
 
