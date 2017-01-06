@@ -19,6 +19,6 @@ Dense Tensor Layer: f_i = a( xV_ix^T + W_ix^T + b_i)
 I provided many different examples for different parameterizations of V, including a low-rank version of V,
  a symmetric V, and V restricted to positive-definite matrices. Please explore the examples and ask any questions.
  
- ##Comments
+##Comments
  
  Please feel free to add issues or pull requests. I'm always interested in any improvements or issues.
