@@ -1,19 +1,9 @@
 """"Example usage of DenseTensorSymmetric layer on MNIST dataset (~0.2% train/2% test error with single layer). """
 
-import os
-import logging
 import logging.config
-from sklearn.utils import shuffle
 from keras.layers import Dense, Input
 from keras.models import Model
-from keras.datasets import mnist
 from keras.optimizers import Adam
-import numpy as np
-import pickle
-import keras.backend as K
-from tqdm import tqdm
-from keras.regularizers import WeightRegularizer, l1, l2
-from example import experiment
 
 
 # Total params: 50890

@@ -1,29 +1,10 @@
 """"Example usage of DenseTensor layer on MNIST dataset (~0.2% train/2% test error with single layer). """
 
 import os
-import logging
-import logging.config
-from sklearn.utils import shuffle
-from keras.layers import Dense, Input
-from keras.models import Model
 from keras.datasets import mnist
-from keras.optimizers import Adam
 import numpy as np
-import pickle
-import keras.backend as K
-from tqdm import tqdm
-from dense_tensor import DenseTensor
-from keras.regularizers import WeightRegularizer, l1, l2
 import pandas as pd
-
-
-def one_hot(labels, m):
-    """Convert labels to one-hot representations"""
-    n = labels.shape[0]
-    y = np.zeros((n, m))
-    y[np.arange(n), labels.ravel()] = 1
-    return y
-
+from keras.utils.np_utils import to_categorical
 
 def mnist_data():
     """Rescale and reshape MNIST data"""
@@ -49,8 +30,8 @@ def experiment(path, model, nb_epoch=100):
 
     batch_size = 32
     k = 10
-    history = model.fit(x_train, one_hot(y_train, k), nb_epoch=nb_epoch, batch_size=batch_size,
-                        validation_data=(x_test, one_hot(y_test, k)))
+    history = model.fit(x_train, to_categorical(y_train, k), nb_epoch=nb_epoch, batch_size=batch_size,
+                        validation_data=(x_test, to_categorical(y_test, k)))
     model.save_weights(modelpath)
     df = pd.DataFrame(history.history)
     df.to_csv(csvpath)

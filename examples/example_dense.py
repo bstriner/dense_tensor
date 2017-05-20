@@ -5,7 +5,7 @@ from keras.layers import Dense, Input
 from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l1
-from example import experiment
+from dense_tensor.example_utils import experiment
 
 
 # Total params: 7850
