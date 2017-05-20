@@ -23,12 +23,12 @@ def mnist_data():
 def experiment(path, model, epochs=100):
     if not os.path.exists(path):
         os.makedirs(path)
-    print "Training %s" % path
+    print("Training %s" % path)
     model.summary()
     csvpath = os.path.join(path, "history.csv")
     modelpath = os.path.join(path, "model.h5")
     if os.path.exists(csvpath):
-        print "Already exists: %s" % csvpath
+        print("Already exists: %s" % csvpath)
         return
     x_train, y_train, x_test, y_test = mnist_data()
 

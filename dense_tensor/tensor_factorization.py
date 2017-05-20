@@ -8,7 +8,7 @@ Factorizations of inner tensor. Each factorization should return a tuple of para
 """
 
 
-def simple_tensor_factorization(tensor_initializer='random_uniform',
+def simple_tensor_factorization(tensor_initializer='uniform',
                                 tensor_regularizer=None,
                                 tensor_constraint=None):
     def fun(layer, units, input_dim, name):
@@ -24,7 +24,7 @@ def simple_tensor_factorization(tensor_initializer='random_uniform',
 
 
 def tensor_factorization_low_rank(q,
-                                  tensor_initializer='random_uniform',
+                                  tensor_initializer='uniform',
                                   tensor_regularizer=None,
                                   tensor_constraint=None):
     def fun(layer, units, input_dim, name):
@@ -43,7 +43,7 @@ def tensor_factorization_low_rank(q,
 def tensor_factorization_symmetric(q,
                                    alpha=1e-7,
                                    beta=1.0,
-                                   tensor_initializer='random_uniform',
+                                   tensor_initializer='uniform',
                                    tensor_regularizer=None,
                                    tensor_constraint=None):
     """

@@ -71,7 +71,7 @@ class DenseTensor(Layer):
                  kernel_initializer='glorot_uniform',
                  kernel_regularizer=None,
                  kernel_constraint=None,
-                 bias_initializer='random_uniform',
+                 bias_initializer='uniform',
                  bias_regularizer=None,
                  bias_constraint=None,
                  activity_regularizer=None,
