@@ -3,18 +3,18 @@
 from keras.layers import Input
 from keras.models import Model
 from keras.optimizers import Adam
-from dense_tensor import DenseTensor, simple_tensor_factorization
 
-from dense_tensor.utils import l1l2
+from dense_tensor import DenseTensor, tensor_factorization_symmetric
 from dense_tensor.example_utils import experiment
+from dense_tensor.utils import l1l2
 
 
-def tensor_model(input_dim=28 * 28, output_dim=10, reg=lambda: l1l2(1e-6, 1e-6)):
+def tensor_model_symmetric(input_dim=28 * 28, output_dim=10, reg=lambda: l1l2(1e-6, 1e-6)):
     """
-    One layer of a DenseTensor
+    One layer of a DenseTensor low rank
     """
     _x = Input(shape=(input_dim,))
-    factorization = simple_tensor_factorization(tensor_regularizer=reg())
+    factorization = tensor_factorization_symmetric(q=10, tensor_regularizer=reg())
     y = DenseTensor(units=output_dim,
                     activation='softmax',
                     kernel_regularizer=reg(),
@@ -26,6 +26,6 @@ def tensor_model(input_dim=28 * 28, output_dim=10, reg=lambda: l1l2(1e-6, 1e-6))
 
 
 if __name__ == "__main__":
-    path = "output/dense_tensor"
-    model = tensor_model()
+    path = "output/dense_tensor_symmetric"
+    model = tensor_model_symmetric()
     experiment(path, model)

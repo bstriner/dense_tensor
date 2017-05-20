@@ -1,3 +1,4 @@
-from dense_tensor import DenseTensor
-from dense_tensor_symmetric import DenseTensorSymmetric
-from dense_tensor_low_rank import DenseTensorLowRank
+from .dense_tensor import DenseTensor
+from .tensor_factorization import simple_tensor_factorization
+from .tensor_factorization import tensor_factorization_low_rank
+from .tensor_factorization import tensor_factorization_symmetric

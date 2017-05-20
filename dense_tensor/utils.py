@@ -1,7 +1,7 @@
 # Utils for Keras 1/2 compatibility
 
 import keras
-from keras import regularizers
+
 keras_2 = int(keras.__version__.split(".")[0]) > 1  # Keras > 1
 
 
@@ -12,6 +12,7 @@ def add_activity_regularizer(layer):
             layer.regularizers = []
             layer.regularizers.append(layer.activity_regularizer)
 
+
 def l1l2(l1_weight=0, l2_weight=0):
     if keras_2:
         from keras.regularizers import L1L2
@@ -19,6 +20,7 @@ def l1l2(l1_weight=0, l2_weight=0):
     else:
         from keras.regularizers import l1l2
         return l1l2(l1_weight, l2_weight)
+
 
 def get_initializer(initializer):
     if keras_2:
@@ -29,6 +31,13 @@ def get_initializer(initializer):
         return initializations.get(initializer)
 
 
+def fit(model, x, y, epochs=100, **kwargs):
+    if keras_2:
+        return model.fit(x, y, epochs=epochs, **kwargs)
+    else:
+        return model.fit(x, y, nb_epoch=epochs, **kwargs)
+
+
 def add_weight(layer,
                shape,
                name,
@@ -37,11 +46,11 @@ def add_weight(layer,
                constraint=None):
     initializer = get_initializer(initializer)
     if keras_2:
-        layer.add_weight(initializer=initializer,
-                         shape=shape,
-                         name=name,
-                         regularizer=regularizer,
-                         constraint=constraint)
+        return layer.add_weight(initializer=initializer,
+                                shape=shape,
+                                name=name,
+                                regularizer=regularizer,
+                                constraint=constraint)
     else:
         # create weight
         w = initializer(shape, name=name)
@@ -54,3 +63,4 @@ def add_weight(layer,
             layer.regularizers = []
         regularizer.set_param(w)
         layer.regularizers.append(regularizer)
+        return w

@@ -1,5 +1,5 @@
 # dense_tensor
-Dense Tensor Layer for Keras. Tensor networks/second order networks.
+Dense Tensor Layer for Keras. Supports both Keras 1 and 2. Tensor networks/second order networks.
 
 Basically, this is like a quadratic layer if all other layers are linear.
 
@@ -18,13 +18,13 @@ Normal Dense Layer: f_i = a( W_ix^T + b_i)
 
 Dense Tensor Layer: f_i = a( xV_ix^T + W_ix^T + b_i)
 
-"DenseTensor": same usage as Keras "Dense" Layer but has additional argument "V_regularizer".
+"DenseTensor": same usage as Keras "Dense" Layer utilizes an additional set of parameters `V`.
 
 ##Variations
 
-I provided many different examples for different parameterizations of V, including a low-rank version of V,
- a symmetric V, and V restricted to positive-definite matrices. Please explore the examples and ask any questions.
+I provided several examples for different parameterizations of V, including a low-rank version of V,
+a symmetric V, and V restricted to positive-definite matrices. Please explore the examples and ask any questions.
  
 ##Comments
  
- Please feel free to add issues or pull requests. I'm always interested in any improvements or issues.
+Please feel free to add issues or pull requests. I'm always interested in any improvements or issues.

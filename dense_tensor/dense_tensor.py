@@ -4,14 +4,12 @@ Based on Dense Layer (https://github.com/fchollet/keras/blob/master/keras/layers
 Calculates f_i = a( xV_ix^T + W_ix^T + b_i)
 """
 
-from keras.layers.core import Layer
-
-from keras import backend as K
 from keras import activations, regularizers, constraints
-from keras.engine import InputSpec, Layer, Merge
-from keras.regularizers import ActivityRegularizer, Regularizer
-from .utils import add_weight, get_initializer, add_activity_regularizer
+from keras import backend as K
+from keras.engine import InputSpec, Layer
+
 from .tensor_factorization import simple_tensor_factorization
+from .utils import add_weight, get_initializer, add_activity_regularizer
 
 
 class DenseTensor(Layer):
@@ -79,7 +77,7 @@ class DenseTensor(Layer):
                  activity_regularizer=None,
                  bias=True,
                  input_dim=None,
-                 factorization=simple_tensor_factorization,
+                 factorization=simple_tensor_factorization(),
                  **kwargs):
         self.activation = activations.get(activation)
         self.units = units
@@ -109,18 +107,18 @@ class DenseTensor(Layer):
         self.input_spec = [InputSpec(dtype=K.floatx(),
                                      shape=(None, input_dim))]
 
-        self.W = add_weight(self,
+        self.W = add_weight(layer=self,
                             shape=(input_dim, self.units),
                             name='{}_W'.format(self.name),
                             initializer=self.kernel_initializer,
                             regularizer=self.kernel_regularizer,
-                            constraint=self.kernel_contraint)
-        self.V = self.factorization(name='{}_V'.format(self.name),
-                                    model=self,
-                                    input_dim=input_dim,
-                                    units=self.units)
+                            constraint=self.kernel_constraint)
+        self.V_weights, self.V = self.factorization(name='{}_V'.format(self.name),
+                                                    layer=self,
+                                                    input_dim=input_dim,
+                                                    units=self.units)
         if self.bias:
-            self.b = add_weight(self,
+            self.b = add_weight(layer=self,
                                 shape=(self.units,),
                                 name='{}_b'.format(self.name),
                                 initializer=self.bias_initializer,
@@ -150,14 +148,15 @@ class DenseTensor(Layer):
         return input_shape[0], self.units
 
     def get_config(self):
-        config = {'output_dim': self.output_dim,
-                  'init': self.init.__name__,
+        config = {'units': self.units,
                   'activation': self.activation.__name__,
+                  'kernel_initializer': self.kernel_initializer.__name__,
                   'kernel_regularizer': self.kernel_regularizer.get_config() if self.kernel_regularizer else None,
-                  'bias_regularizer': self.bias_regularizer.get_config() if self.bias_regularizer else None,
-                  'activity_regularizer': self.activity_regularizer.get_config() if self.activity_regularizer else None,
                   'kernel_constraint': self.kernel_constraint.get_config() if self.kernel_constraint else None,
+                  'bias_initializer': self.bias_initializer.__name__,
+                  'bias_regularizer': self.bias_regularizer.get_config() if self.bias_regularizer else None,
                   'bias_constraint': self.bias_constraint.get_config() if self.bias_constraint else None,
+                  'activity_regularizer': self.activity_regularizer.get_config() if self.activity_regularizer else None,
                   'bias': self.bias,
                   'input_dim': self.input_dim}
         base_config = super(DenseTensor, self).get_config()
