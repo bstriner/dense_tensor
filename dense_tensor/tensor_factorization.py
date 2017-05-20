@@ -60,7 +60,7 @@ def tensor_factorization_symmetric(q,
                        shape=(units, input_dim, q),
                        name=name)  # units, input_dim, q
         tmp = K.batch_dot(Q, Q, axes=[[2], [2]])  # p,m,q + p,m,q = p,m,m
-        V = beta * ((eye(input_dim, input_dim).dimshuffle(['x', 0, 1]) * alpha) + tmp)  # m,p,p
+        V = beta * ((eye(input_dim, input_dim) * alpha) + tmp)  # m,p,p
         return [q], V
 
     return fun
