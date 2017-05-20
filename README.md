@@ -28,3 +28,8 @@ a symmetric V, and V restricted to positive-definite matrices. Please explore th
 ##Comments
  
 Please feel free to add issues or pull requests. I'm always interested in any improvements or issues.
+
+##Compatibility
+
+Travis tests a matrix including Theano, tensorflow, Python 2.7, Python 3.5, Keras 1 and Keras 2.
+Code should work on most configurations but please let me know if you run into issues.

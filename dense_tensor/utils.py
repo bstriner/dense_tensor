@@ -59,8 +59,9 @@ def add_weight(layer,
             layer.trainable_weights = []
         layer.trainable_weights.append(w)
         # add to regularizers
-        if not hasattr(layer, 'regularizers'):
-            layer.regularizers = []
-        regularizer.set_param(w)
-        layer.regularizers.append(regularizer)
+        if regularizer:
+            if not hasattr(layer, 'regularizers'):
+                layer.regularizers = []
+            regularizer.set_param(w)
+            layer.regularizers.append(regularizer)
         return w
