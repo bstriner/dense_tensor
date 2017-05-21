@@ -1,13 +1,11 @@
 """"Example usage of DenseTensor layer on MNIST dataset (~0.2% train/2% test error with single layer). """
-import os
-os.environ["THEANO_FLAGS"]="optimizer=None"
 from keras.layers import Input
 from keras.models import Model
 from keras.optimizers import Adam
-from dense_tensor import DenseTensor, simple_tensor_factorization
 
-from dense_tensor.utils import l1l2
+from dense_tensor import DenseTensor, simple_tensor_factorization
 from dense_tensor.example_utils import experiment
+from dense_tensor.utils import l1l2
 
 
 def tensor_model(input_dim=28 * 28, output_dim=10, reg=lambda: l1l2(1e-6, 1e-6)):
