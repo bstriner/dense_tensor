@@ -14,7 +14,7 @@ def tensor_model_symmetric(input_dim=28 * 28, output_dim=10, reg=lambda: l1l2(1e
     One layer of a DenseTensor low rank
     """
     _x = Input(shape=(input_dim,))
-    factorization = tensor_factorization_symmetric(q=10, tensor_regularizer=reg())
+    factorization = tensor_factorization_symmetric(q=5, tensor_regularizer=reg())
     y = DenseTensor(units=output_dim,
                     activation='softmax',
                     kernel_regularizer=reg(),

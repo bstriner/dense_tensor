@@ -32,11 +32,9 @@ def tensor_factorization_low_rank(q,
                          initializer=tensor_initializer,
                          regularizer=tensor_regularizer,
                          constraint=tensor_constraint,
-                         shape=(units, input_dim, q),
+                         shape=(units, q, input_dim),
                          name="{}_Q{}".format(name, i)) for i in range(2)]
-        q1 = qs[0]
-        q2 = K.permute_dimensions(qs[1], (0,2,1))
-        V = K.batch_dot(q1, q2, axes=[[2], [1]])  # p,m,q + p,m,q = p,m,m
+        V = K.batch_dot(qs[0], qs[1], axes=[[1], [1]])  # p,m,q + p,q,m = p,m,m
         return qs, V
 
     return fun
