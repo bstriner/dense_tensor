@@ -57,9 +57,9 @@ def tensor_factorization_symmetric(q,
                        initializer=tensor_initializer,
                        regularizer=tensor_regularizer,
                        constraint=tensor_constraint,
-                       shape=(units, input_dim, q),
+                       shape=(units, q, input_dim),
                        name=name)  # units, input_dim, q
-        tmp = K.batch_dot(Q, Q, axes=[[2], [2]])  # p,m,q + p,m,q = p,m,m
+        tmp = K.batch_dot(Q, Q, axes=[[1], [1]])  # p,m,q + p,m,q = p,m,m
         V = beta * ((eye(input_dim, input_dim) * alpha) + tmp)  # m,p,p
         return [q], V
 
