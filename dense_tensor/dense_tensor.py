@@ -7,7 +7,7 @@ Calculates f_i = a( xV_ix^T + W_ix^T + b_i)
 from keras import activations, regularizers, constraints
 from keras import backend as K
 from keras.engine import InputSpec, Layer
-
+from .backend import quadratic_batch
 from .tensor_factorization import simple_tensor_factorization
 from .utils import add_weight, get_initializer, add_activity_regularizer
 
@@ -133,9 +133,8 @@ class DenseTensor(Layer):
 
     def call(self, x, mask=None):
         output = K.dot(x, self.W)
-        tmp1 = K.dot(x, self.V)  # n,input_dim + units,input_dim, input_dim = n,units,input_dim
-        tmp2 = K.batch_dot(x, tmp1, axes=[[1], [2]])  # n,input_dim + n,units,input_dim = n,units
-        output += tmp2
+        q = quadratic_batch(x, self.V)
+        output += q
         if self.bias:
             output += self.b
         return self.activation(output)

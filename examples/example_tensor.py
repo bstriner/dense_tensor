@@ -1,5 +1,6 @@
 """"Example usage of DenseTensor layer on MNIST dataset (~0.2% train/2% test error with single layer). """
-
+import os
+os.environ["THEANO_FLAGS"]="optimizer=None"
 from keras.layers import Input
 from keras.models import Model
 from keras.optimizers import Adam
